@@ -16,6 +16,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         imageView=findViewById(R.id.iv);
+        //使用SD卡缓存
+        imageLoader.setUseDiskCache(true);
+        //不适用SD卡缓存
+        //imageLoader.setUseDiskCache(false);
         imageLoader.displayImage(url,imageView);
     }
 }

@@ -12,8 +12,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class ImageLoader {
-    //图片缓存
+    //内存缓存
     ImageCache mImageCache=new ImageCache();
+    //SD卡缓存
+    DiskCache mDiskCache=new DiskCache();
+    //是否使用SD卡缓存
+
+    boolean isUseDiskCache=false;
+
     //线程池
     ExecutorService mExecutorService= Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
@@ -26,13 +32,13 @@ public class ImageLoader {
      * @param imageView
      */
     public void displayImage(final String url,final ImageView imageView){
-
-        Bitmap bitmap=mImageCache.get(url);
+        //判断使用那种缓存
+        Bitmap bitmap=isUseDiskCache?mDiskCache.get(url):mImageCache.get(url);
         if(bitmap!=null){
             imageView.setImageBitmap(bitmap);
             return;
         }
-
+        //没有缓存则交给线程池进行下载
         imageView.setTag(url);
         mExecutorService.submit(new Runnable() {
             @Override
@@ -47,6 +53,10 @@ public class ImageLoader {
                 mImageCache.put(url,bitmap);
             }
         });
+    }
+
+    public void setUseDiskCache(boolean useDiskCache){
+        isUseDiskCache=useDiskCache;
     }
 
     private Bitmap downloadImage(String imageUrl) {
