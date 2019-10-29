@@ -16,6 +16,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         imageView=findViewById(R.id.iv);
+        //使用双缓存
+        imageLoader.setUseDoubleCache(true);
         //使用SD卡缓存
         imageLoader.setUseDiskCache(true);
         //不适用SD卡缓存

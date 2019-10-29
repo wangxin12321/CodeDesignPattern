@@ -3,6 +3,11 @@ package wx.swpu.edu.codedesignpattern;
 import android.graphics.Bitmap;
 import android.util.LruCache;
 
+/**
+ * date:2019.10.29
+ * author：Wx
+ * 本地缓存
+ */
 public class ImageCache {
     //图片LRU加载
     LruCache<String, Bitmap> mImageCache;

@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
+ * SD卡缓存
  * author:Wx
  * date:2019.10.29
  */
