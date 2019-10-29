@@ -12,7 +12,7 @@ import java.io.IOException;
  * author:Wx
  * date:2019.10.29
  */
-public class DiskCache {
+public class DiskCache implements ImageCache{
     static String cacheDir="sdcard/cache/";
 
     /**

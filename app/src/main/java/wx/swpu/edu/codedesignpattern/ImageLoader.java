@@ -17,69 +17,50 @@ import java.util.concurrent.Executors;
  * author:Wx
  */
 public class ImageLoader {
-    //内存缓存
-    ImageCache mImageCache=new ImageCache();
-    //SD卡缓存
-    DiskCache mDiskCache=new DiskCache();
-    //双缓存
-    DoubleCache mDoubleCache=new DoubleCache();
-    //是否使用SD卡缓存
-    boolean isUseDiskCache=false;
-    //使用双缓存
-    boolean isUseDoubleCache=false;
-
+    //图片缓存
+    ImageCache mImageCache=new MemoryCache();
 
     //线程池
     ExecutorService mExecutorService= Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
-
+    //注入缓存实现
+    public void setImageCache(ImageCache cache){
+        mImageCache=cache;
+    }
 
 
     /**
      * 展示图片
-     * @param url
+     * @param imageUrl
      * @param imageView
      */
-    public void displayImage(final String url,final ImageView imageView){
-
-        Bitmap bmp=null;
-        if(isUseDoubleCache){
-            bmp=mDoubleCache.get(url);
-        }else if(isUseDiskCache){
-            bmp=mDiskCache.get(url);
-        }else {
-            bmp=mImageCache.get(url);
+    public void displayImage(final String imageUrl,ImageView imageView) {
+        Bitmap bitmap = mImageCache.get(imageUrl);
+        if (bitmap != null) {
+            imageView.setImageBitmap(bitmap);
+            return;
         }
 
-        //判断使用那种缓存
-        if(bmp!=null){
-            imageView.setImageBitmap(bmp);
-        }
-        //没有缓存则交给线程池进行下载
-        imageView.setTag(url);
+        submitLoadRequest(imageUrl,imageView);
+
+    }
+
+    private void submitLoadRequest(final String imageUrl, final ImageView imageView) {
+        imageView.setTag(imageUrl);
         mExecutorService.submit(new Runnable() {
             @Override
             public void run() {
-                Bitmap bitmap=downloadImage(url);
-                if(bitmap==null){
+                Bitmap bitmap = downloadImage(imageUrl);
+                if (bitmap == null) {
                     return;
                 }
-                if(imageView.getTag().equals(url)){
+                if (imageView.getTag().equals(imageUrl)) {
                     imageView.setImageBitmap(bitmap);
                 }
-                mImageCache.put(url,bitmap);
+                mImageCache.put(imageUrl, bitmap);
             }
         });
     }
-
-    public void setUseDiskCache(boolean useDiskCache){
-        isUseDiskCache=useDiskCache;
-    }
-
-    public void setUseDoubleCache(boolean useDoubleCache){
-        isUseDoubleCache=useDoubleCache;
-    }
-
 
     /**
      * @param imageUrl
